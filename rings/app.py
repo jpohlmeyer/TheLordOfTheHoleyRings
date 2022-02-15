@@ -1,82 +1,79 @@
+import random, time
 import tkinter as tk
+from ring_test import RingTest, HoleyRing
 
 
-def create_circle(x, y, r, canvas):
-    x0 = x - r
-    y0 = y - r
-    x1 = x + r
-    y1 = y + r
-    return canvas.create_oval(x0, y0, x1, y1, width=5, outline="white")
+class App:
 
-def calculate_button_position(button_center_position, buttonsize, circleradius, position):
-    # TODO fix button position because of circle arc
-    # TODO use circle instead of rectancle button? do not use button?
-    halfbuttonsize = buttonsize/2
-    if position == 0:
-        x = button_center_position
-        y = button_center_position - circleradius
-    elif position == 1:
-        x = button_center_position + (circleradius/2) + halfbuttonsize
-        y = button_center_position - (circleradius/2) - halfbuttonsize
-    elif position == 2:
-        x = button_center_position + circleradius
-        y = button_center_position
-    elif position == 3:
-        x = button_center_position + (circleradius/2) + halfbuttonsize
-        y = button_center_position + (circleradius/2) + halfbuttonsize
-    elif position == 4:
-        x = button_center_position
-        y = button_center_position + circleradius
-    elif position == 5:
-        x = button_center_position - (circleradius/2) - halfbuttonsize
-        y = button_center_position + (circleradius/2) + halfbuttonsize
-    elif position == 6:
-        x = button_center_position - circleradius
-        y = button_center_position
-    else:
-        x = button_center_position - (circleradius/2) - halfbuttonsize
-        y = button_center_position - (circleradius/2) - halfbuttonsize
-    return x, y
+    def __init__(self):
+        self.current_test_size = None
+        self.canvas = None
+        self.canvassize = 700
+        self.frm_test = None
+        self.frm_controls = None
+        sizes = [5, 20, 50, 110, 230]
+        self.ring_test = RingTest(self.canvassize/2, sizes)
 
+    def main(self):
+        window = tk.Tk()
+        window.title('The Lord of the Holey Rings')
+        self.frm_test = tk.Frame(master=window, width=900, height=900, bg='darkgrey', borderwidth=2, relief='sunken')
+        lbl_test_head = tk.Label(master=self.frm_test, text="Test", bg='black', fg='white', font=("Arial", 50, 'bold'))
+        lbl_test_head.place(x=0, y=0)
 
-def create_test_circle(master, circleradius):
-    canvassize = 700
-    canvas = tk.Canvas(master=master, width=canvassize, height=canvassize, bg='black')
-    canvas.bind("<Button-1>", choice_not_right)
-    canvas.place(x=100, y=200)
+        self.current_test_size = tk.StringVar()
+        self.current_test_size.set("")
+        lbl_test_size = tk.Label(master=self.frm_test, textvariable=self.current_test_size, bg='black', fg='white', font=("Arial", 50, 'bold'))
+        lbl_test_size.place(x=200, y=0)
 
-    create_circle(canvassize/2, canvassize/2, circleradius, canvas)
+        self.frm_controls = tk.Frame(master=window, width=900, height=900, bg='darkgrey', borderwidth=2, relief='sunken')
+        lbl_controls_head = tk.Label(master=self.frm_controls, text="Controls", bg='black', fg='white', font=("Arial", 50, 'bold'))
+        lbl_controls_head.place(x=0, y=0)
 
-    buttonsize = circleradius/2
-    button_center_position = (canvassize/2) - (buttonsize/2)
-    buttonposition_x, buttonposition_y = calculate_button_position(button_center_position, buttonsize, circleradius, 1)
+        self.frm_test.pack(fill=tk.Y, side=tk.LEFT)
+        self.frm_controls.pack(fill=tk.Y, side=tk.RIGHT)
+        self.draw_new_random_circle()
 
-    pixel = tk.PhotoImage(width=1, height=1)
-    btn_right = tk.Button(master=canvas, relief='flat', bg='grey', borderwidth=0,
-                          highlightthickness=0, fg='black', text="", image=pixel,
-                          width=buttonsize, height=buttonsize, compound='center')
-    btn_right.bind("<Button-1>", choice_right)
-    btn_right.place(x=buttonposition_x, y=buttonposition_y)
+        window.mainloop()
 
-def choice_not_right(event):
-    print("no")
+    def create_circle(self, x, y, r, is_hole, line_width):
+        x0 = x - r
+        y0 = y - r
+        x1 = x + r
+        y1 = y + r
+        if is_hole:
+            outline = 'black'
+            fill = 'black'
+        else:
+            outline = 'white'
+            fill = ''
+        self.canvas.create_oval(x0, y0, x1, y1, width=line_width, outline=outline, fill=fill)
 
-def choice_right(event):
-    print("yes")
+    def create_test_circle(self, master, ring):
+        self.canvas = tk.Canvas(master=master, width=self.canvassize, height=self.canvassize, bg='black')
+        self.canvas.bind("<Button-1>", self.canvas_clicked)
+        self.canvas.place(x=100, y=200)
 
-def main():
-    window = tk.Tk()
-    window.title('The Lord of the Holey Rings')
-    frm_test = tk.Frame(master=window, width=900, height=900, bg='darkgrey', borderwidth=2, relief='sunken')
-    lbl_test_head = tk.Label(master=frm_test, text="Test", bg='black', fg='white', font=("Arial", 50, 'bold'))
-    lbl_test_head.place(x=0, y=0)
+        self.create_circle(ring.center_position, ring.center_position, ring.circle_radius, False, ring.line_width)
 
-    frm_controls = tk.Frame(master=window, width=900, height=900, bg='darkgrey', borderwidth=2, relief='sunken')
-    lbl_controls_head = tk.Label(master=frm_controls, text="Controls", bg='black', fg='white', font=("Arial", 50, 'bold'))
-    lbl_controls_head.place(x=0, y=0)
+        self.create_circle(ring.hole_position[0], ring.hole_position[1], ring.hole_radius, True, 1)
 
-    create_test_circle(frm_test, 50)
-    frm_test.pack(fill=tk.Y, side=tk.LEFT)
-    frm_controls.pack(fill=tk.Y, side=tk.RIGHT)
+    def canvas_clicked(self, event):
+        ring = self.ring_test.current_ring()
+        if abs(event.x - ring.hole_position[0]) < ring.hole_radius \
+                and abs(event.y - ring.hole_position[1]) < ring.hole_radius:
+            print("yes")
+        else:
+            print("no")
+        self.draw_new_random_circle()
 
-    window.mainloop()
+    def draw_new_random_circle(self):
+        if self.canvas:
+            self.canvas.delete("all")
+            self.canvas.update_idletasks()
+            time.sleep(0.5)
+        if self.ring_test.next_ring():
+            self.current_test_size.set(self.ring_test.current_ring().circle_radius)
+            self.create_test_circle(self.frm_test, self.ring_test.current_ring())
+        else:
+            self.current_test_size.set("Done")

@@ -1,4 +1,4 @@
-import rings.app
+from rings.app import App
 
 if __name__ == "__main__":
-    rings.app.main()
+    App().main()

@@ -3,7 +3,8 @@ import random
 
 class RingTest:
 
-    def __init__(self, center_position, sizes, is_black):
+    def __init__(self, center_position, sizes, is_black, start_epoch):
+        self.start_epoch = start_epoch
         self.holey_rings = []
         for size in sizes:
             for count in range(0, 5):

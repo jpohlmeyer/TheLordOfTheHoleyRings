@@ -62,11 +62,11 @@ class App:
         self.frm_controls.pack(fill=tk.Y, side=tk.RIGHT)
 
     def start_black_test(self):
-        self.ring_test = RingTest(self.CANVASSIZE / 2, self.SIZES, True)
+        self.ring_test = RingTest(self.CANVASSIZE / 2, self.SIZES, True, time.time())
         self.draw_test()
 
     def start_white_test(self):
-        self.ring_test = RingTest(self.CANVASSIZE / 2, self.SIZES, False)
+        self.ring_test = RingTest(self.CANVASSIZE / 2, self.SIZES, False, time.time())
         self.draw_test()
 
     def draw_test(self):
@@ -147,8 +147,10 @@ class App:
     def btn_press(self, btn, type):
         ring = self.ring_test.current_ring()
         if ring.hole_type == type:
+            self.append_current_try_to_file(True)
             btn.configure(activebackground='green')
         else:
+            self.append_current_try_to_file(False)
             btn.configure(activebackground='red')
         self.draw_new_random_circle()
 
@@ -187,4 +189,16 @@ class App:
             self.canvas.delete("all")
             self.canvas.update_idletasks()
         else:
+            self.ring_test = None
             self.clear_test_frame()
+
+    def append_current_try_to_file(self, is_success):
+        f = open("log.csv", "a")
+        ring = self.ring_test.current_ring()
+        if self.ring_test.is_black:
+            color = 'black'
+        else:
+            color = 'white'
+        csv_string = "{},{},{},{},{}\n".format(self.ring_test.start_epoch, color, ring.circle_radius, ring.hole_type, is_success)
+        f.write(csv_string)
+        f.close()

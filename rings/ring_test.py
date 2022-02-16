@@ -6,7 +6,7 @@ class RingTest:
     def __init__(self, center_position, sizes):
         self.holey_rings = []
         for size in sizes:
-            for count in range(0, 1):
+            for count in range(0, 5):
                 self.holey_rings.append(HoleyRing(center_position, size, random.randint(0, 7)))
         self.holey_rings.reverse()
         self.ring_index = -1

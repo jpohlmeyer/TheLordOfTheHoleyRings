@@ -12,7 +12,7 @@ This project depends on python3 tkinter.
 
 ## TODO
 
-- [ ] Show each ring only for a distinct amount of time
+- [x] Show each ring only for a distinct amount of time
 - [ ] Tune sizes of rings, holes, and line width
 - [x] White/Black and Black/White Mode
 - [ ] Log data

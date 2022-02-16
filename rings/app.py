@@ -174,12 +174,15 @@ class App:
         self.create_circle(ring.hole_position[0], ring.hole_position[1], ring.hole_radius, True, 1)
 
     def draw_new_random_circle(self):
-        if self.ring_test.ring_index > -1:
-            self.canvas.delete("all")
-            self.canvas.update_idletasks()
-            time.sleep(0.5)
+        self.canvas.delete("all")
+        self.canvas.update_idletasks()
+        time.sleep(0.5)
         if self.ring_test.next_ring():
             self.current_test_size.set(self.ring_test.current_ring().circle_radius)
             self.draw_holey_ring(self.ring_test.current_ring())
+            self.canvas.update_idletasks()
+            time.sleep(1)
+            self.canvas.delete("all")
+            self.canvas.update_idletasks()
         else:
             self.clear_test_frame()

@@ -6,30 +6,69 @@ from rings.ring_test import RingTest
 class App:
 
     def __init__(self):
+        self.ring_test = None
         self.btn_pixel = None
         self.current_test_size = None
         self.canvas = None
-        self.canvassize = 700
+        self.canvassize = 100
         self.window = None
         self.frm_test = None
         self.frm_controls = None
-        sizes = [5, 20, 50, 110, 230]
-        self.ring_test = RingTest(self.canvassize/2, sizes)
+        self.sizes = [2, 4, 8, 16, 32]
 
     def main(self):
         self.draw_window()
-        self.draw_new_random_circle()
         self.window.mainloop()
 
     def draw_window(self):
         self.window = tk.Tk()
         self.window.title('The Lord of the Holey Rings')
+        self.btn_pixel = tk.PhotoImage(master=self.window, width=1, height=1)
         self.draw_test_frame()
         self.draw_controls_frame()
 
     def draw_test_frame(self):
         self.frm_test = tk.Frame(master=self.window, width=900, height=900, bg='darkgrey', borderwidth=2,
                                  relief='sunken')
+        self.frm_test.pack(fill=tk.Y, side=tk.LEFT)
+
+    def clear_test_frame(self):
+        for widget in self.frm_test.winfo_children():
+            widget.destroy()
+
+    def draw_controls_frame(self):
+        self.frm_controls = tk.Frame(master=self.window, width=900, height=900, bg='darkgrey', borderwidth=2,
+                                     relief='sunken')
+
+        frm_control_buttons = tk.Frame(master=self.frm_controls, bg='darkgrey')
+        frm_control_buttons.place(x=100, y=100)
+
+        btn_start_black_test = tk.Button(master=frm_control_buttons, text='Start Black Test', font=("Arial", 50, 'bold'),
+                                         fg='white', activebackground='darkgrey', image=self.btn_pixel,
+                                         bg='black', height=100, compound='center', padx=0, pady=0, command=self.start_black_test)
+
+        btn_start_black_test.grid(row=0, column=0)
+
+        btn_start_white_test = tk.Button(master=frm_control_buttons, text='Start White Test',
+                                         font=("Arial", 50, 'bold'),
+                                         fg='white', activebackground='darkgrey', image=self.btn_pixel,
+                                         bg='black', height=100, compound='center', padx=0, pady=0,
+                                         command=self.start_white_test)
+
+        btn_start_white_test.grid(row=1, column=0)
+
+        self.frm_controls.pack(fill=tk.Y, side=tk.RIGHT)
+
+    def start_black_test(self):
+        self.ring_test = RingTest(self.canvassize / 2, self.sizes, True)
+        self.draw_test()
+
+    def start_white_test(self):
+        self.ring_test = RingTest(self.canvassize / 2, self.sizes, False)
+        self.draw_test()
+
+    def draw_test(self):
+        self.clear_test_frame()
         lbl_test_head = tk.Label(master=self.frm_test, text="Test", bg='black', fg='white', font=("Arial", 50, 'bold'))
         lbl_test_head.place(x=0, y=0)
 
@@ -39,24 +78,18 @@ class App:
                                  font=("Arial", 50, 'bold'))
         lbl_test_size.place(x=200, y=0)
 
-        self.canvas = tk.Canvas(master=self.frm_test, width=self.canvassize, height=self.canvassize, bg='black')
-        self.canvas.bind("<Button-1>", self.canvas_clicked)
-        self.canvas.place(x=100, y=200)
+        if self.ring_test.is_black:
+            bg_color = 'black'
+        else:
+            bg_color = 'white'
 
-        self.frm_test.pack(fill=tk.Y, side=tk.LEFT)
+        self.canvas = tk.Canvas(master=self.frm_test, width=self.canvassize, height=self.canvassize, bg=bg_color)
+        self.canvas.place(x=400, y=200)
 
-    def draw_controls_frame(self):
-        self.frm_controls = tk.Frame(master=self.window, width=900, height=900, bg='darkgrey', borderwidth=2,
-                                     relief='sunken')
-        lbl_controls_head = tk.Label(master=self.frm_controls, text="Controls", bg='black', fg='white',
-                                     font=("Arial", 50, 'bold'))
-        lbl_controls_head.place(x=0, y=0)
+        frm_buttons = tk.Frame(master=self.frm_test, bg='darkgrey')
+        frm_buttons.place(x=300, y=300 + self.canvassize)
 
-        frm_buttons = tk.Frame(master=self.frm_controls, bg='darkgrey')
-        frm_buttons.place(x=200, y=200)
-
-        self.btn_pixel = tk.PhotoImage(master=self.window, width=1, height=1)
-        self.btn_n = self.make_btn(0, frm_buttons)
+        btn_n = self.make_btn(0, frm_buttons)
         btn_ne = self.make_btn(1, frm_buttons)
         btn_e = self.make_btn(2, frm_buttons)
         btn_se = self.make_btn(3, frm_buttons)
@@ -65,7 +98,7 @@ class App:
         btn_w = self.make_btn(6, frm_buttons)
         btn_nw = self.make_btn(7, frm_buttons)
 
-        self.btn_n.grid(column=1, row=1)
+        btn_n.grid(column=1, row=1)
         btn_ne.grid(column=2, row=1)
         btn_e.grid(column=2, row=2)
         btn_se.grid(column=2, row=3)
@@ -74,22 +107,22 @@ class App:
         btn_w.grid(column=0, row=2)
         btn_nw.grid(column=0, row=1)
 
-        self.frm_controls.pack(fill=tk.Y, side=tk.RIGHT)
+        self.draw_new_random_circle()
 
-    def make_btn(self, type, master):
-        if type == 0:
+    def make_btn(self, ring_type, master):
+        if ring_type == 0:
             text = "↑"
-        elif type == 1:
+        elif ring_type == 1:
             text = "↗"
-        elif type == 2:
+        elif ring_type == 2:
             text = "→"
-        elif type == 3:
+        elif ring_type == 3:
             text = "↘"
-        elif type == 4:
+        elif ring_type == 4:
             text = "↓"
-        elif type == 5:
+        elif ring_type == 5:
             text = "↙"
-        elif type == 6:
+        elif ring_type == 6:
             text = "←"
         else:
             text = "↖"
@@ -99,7 +132,7 @@ class App:
                   pady=0)
         btn.bind("<Enter>", func=lambda event, a=btn: self.btn_hover_enter(a))
         btn.bind("<Leave>", func=lambda event, a=btn: self.btn_hover_leave(a))
-        btn.bind("<Button-1>", func=lambda event, a=btn, b=type: self.btn_press(a, b))
+        btn.bind("<Button-1>", func=lambda event, a=btn, b=ring_type: self.btn_press(a, b))
         return btn
 
     def btn_hover_enter(self, btn):
@@ -122,11 +155,17 @@ class App:
         y0 = y - r
         x1 = x + r
         y1 = y + r
-        if is_hole:
-            outline = 'black'
-            fill = 'black'
+        if self.ring_test.is_black:
+            bg_color = 'black'
+            fg_color = 'white'
         else:
-            outline = 'white'
+            bg_color = 'white'
+            fg_color = 'black'
+        if is_hole:
+            outline = bg_color
+            fill = bg_color
+        else:
+            outline = fg_color
             fill = ''
         self.canvas.create_oval(x0, y0, x1, y1, width=line_width, outline=outline, fill=fill)
 
@@ -143,13 +182,4 @@ class App:
             self.current_test_size.set(self.ring_test.current_ring().circle_radius)
             self.draw_holey_ring(self.ring_test.current_ring())
         else:
-            self.current_test_size.set("Done")
-
-    def canvas_clicked(self, event):
-        ring = self.ring_test.current_ring()
-        if abs(event.x - ring.hole_position[0]) < ring.hole_radius \
-                and abs(event.y - ring.hole_position[1]) < ring.hole_radius:
-            print("yes")
-        else:
-            print("no")
-        self.draw_new_random_circle()
+            self.clear_test_frame()

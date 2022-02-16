@@ -4,17 +4,19 @@ from rings.ring_test import RingTest
 
 
 class App:
+    SIZES = [2, 4, 8, 16, 32]
+    CANVASSIZE = 100
+    SECONDS_RING_IS_SHOWN = 1
+    START_DELAY = 0.5
 
     def __init__(self):
         self.ring_test = None
         self.btn_pixel = None
         self.current_test_size = None
         self.canvas = None
-        self.canvassize = 100
         self.window = None
         self.frm_test = None
         self.frm_controls = None
-        self.sizes = [2, 4, 8, 16, 32]
 
     def main(self):
         self.draw_window()
@@ -60,11 +62,11 @@ class App:
         self.frm_controls.pack(fill=tk.Y, side=tk.RIGHT)
 
     def start_black_test(self):
-        self.ring_test = RingTest(self.canvassize / 2, self.sizes, True)
+        self.ring_test = RingTest(self.CANVASSIZE / 2, self.SIZES, True)
         self.draw_test()
 
     def start_white_test(self):
-        self.ring_test = RingTest(self.canvassize / 2, self.sizes, False)
+        self.ring_test = RingTest(self.CANVASSIZE / 2, self.SIZES, False)
         self.draw_test()
 
     def draw_test(self):
@@ -83,11 +85,11 @@ class App:
         else:
             bg_color = 'white'
 
-        self.canvas = tk.Canvas(master=self.frm_test, width=self.canvassize, height=self.canvassize, bg=bg_color)
+        self.canvas = tk.Canvas(master=self.frm_test, width=self.CANVASSIZE, height=self.CANVASSIZE, bg=bg_color)
         self.canvas.place(x=400, y=200)
 
         frm_buttons = tk.Frame(master=self.frm_test, bg='darkgrey')
-        frm_buttons.place(x=300, y=300 + self.canvassize)
+        frm_buttons.place(x=300, y=300 + self.CANVASSIZE)
 
         btn_n = self.make_btn(0, frm_buttons)
         btn_ne = self.make_btn(1, frm_buttons)
@@ -176,12 +178,12 @@ class App:
     def draw_new_random_circle(self):
         self.canvas.delete("all")
         self.canvas.update_idletasks()
-        time.sleep(0.5)
+        time.sleep(self.START_DELAY)
         if self.ring_test.next_ring():
             self.current_test_size.set(self.ring_test.current_ring().circle_radius)
             self.draw_holey_ring(self.ring_test.current_ring())
             self.canvas.update_idletasks()
-            time.sleep(1)
+            time.sleep(self.SECONDS_RING_IS_SHOWN)
             self.canvas.delete("all")
             self.canvas.update_idletasks()
         else:

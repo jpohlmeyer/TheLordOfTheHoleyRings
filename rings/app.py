@@ -1,6 +1,6 @@
 import time
 import tkinter as tk
-from ring_test import RingTest
+from rings.ring_test import RingTest
 
 
 class App:

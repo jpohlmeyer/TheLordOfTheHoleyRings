@@ -1,21 +1,22 @@
 # TheLordOfTheHoleyRings
 
-WIP: Quick Python3 project to test eyesight.
+Simple Python3 project to test eyesight and log the results for further processing afterwards.
 
 ## Dependencies
 
-This project depends on python3 tkinter.
+This project is developed and tested with ```python 3.8.10```.  
+The GUI is constructed using ```tkinter```.
 
 ## Usage
 
 ```python3 -m rings```
 
-The test data is logged in the file ```log.csv```.  
-The scheme is ```epoch,color,ring_radius,ring_type,success```
+The eyesight test data is logged in the file ```log.csv``` in the working directory.
 
 ## TODO
 
 - [x] Show each ring only for a distinct amount of time
-- [ ] Tune sizes of rings, holes, and line width
 - [x] White/Black and Black/White Mode
 - [x] Log data
+- [ ] Tune sizes of rings, holes, and line width
+- [ ] Additional tests with smaller variation in ring radius after initial coarse test

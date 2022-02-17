@@ -195,21 +195,20 @@ class App:
             self.clear_test_frame()
 
     def append_current_try_to_file(self, is_success):
-        f = open(self.LOGFILE, "a")
-        ring = self.ring_test.current_ring()
-        if self.ring_test.is_black:
-            color = 'black'
-        else:
-            color = 'white'
-        csv_string = "{},{},{},{},{}\n".format(self.ring_test.start_epoch, color, ring.circle_radius, ring.hole_type, is_success)
-        f.write(csv_string)
-        f.close()
+        with open(self.LOGFILE, "a") as f:
+            ring = self.ring_test.current_ring()
+            if self.ring_test.is_black:
+                color = 'black'
+            else:
+                color = 'white'
+            csv_string = "{},{},{},{},{}\n".format(self.ring_test.start_epoch, color, ring.circle_radius, ring.hole_type, is_success)
+            f.write(csv_string)
 
     def write_csv_head(self):
         try:
-            f = open(self.LOGFILE, "x")
-            csv_string = "epoch,test_color,ring_radius,hole_type,success\n"
-            f.write(csv_string)
+            with open(self.LOGFILE, "x") as f:
+                csv_string = "epoch,test_color,ring_radius,hole_type,success\n"
+                f.write(csv_string)
         except FileExistsError:
             pass
 

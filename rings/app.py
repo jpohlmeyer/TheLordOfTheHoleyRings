@@ -8,6 +8,7 @@ class App:
     CANVASSIZE = 100
     SECONDS_RING_IS_SHOWN = 1
     START_DELAY = 0.5
+    LOGFILE = "log.csv"
 
     def __init__(self):
         self.ring_test = None
@@ -19,6 +20,7 @@ class App:
         self.frm_controls = None
 
     def main(self):
+        self.write_csv_head()
         self.draw_window()
         self.window.mainloop()
 
@@ -193,7 +195,7 @@ class App:
             self.clear_test_frame()
 
     def append_current_try_to_file(self, is_success):
-        f = open("log.csv", "a")
+        f = open(self.LOGFILE, "a")
         ring = self.ring_test.current_ring()
         if self.ring_test.is_black:
             color = 'black'
@@ -202,3 +204,12 @@ class App:
         csv_string = "{},{},{},{},{}\n".format(self.ring_test.start_epoch, color, ring.circle_radius, ring.hole_type, is_success)
         f.write(csv_string)
         f.close()
+
+    def write_csv_head(self):
+        try:
+            f = open(self.LOGFILE, "x")
+            csv_string = "epoch,test_color,ring_radius,hole_type,success\n"
+            f.write(csv_string)
+        except FileExistsError:
+            pass
+
